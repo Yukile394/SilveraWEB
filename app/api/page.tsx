@@ -85,7 +85,7 @@ export default function HomePage() {
               Sunucu şu anda açık
             </div>
             <h1>
-              Envanterini <em>Silvera</em>'da güçlendir.
+              Envanterini <em>Silvera</em>&apos;da güçlendir.
             </h1>
             <p className="hero-sub">
               Rütbe, kit, kasa anahtarı ve daha fazlası — satın al, oyunda saniyeler
