@@ -27,6 +27,8 @@ export const metadata: Metadata = {
   title: 'Silvera — Minecraft Sunucu Mağazası',
   description:
     'Silvera sunucusu için rütbe, kit, kasa anahtarı ve kredi satın al. Anında teslimat, güvenli ödeme.',
+  icons: { icon: '/logo.png' },
+  openGraph: { images: ['/banner.png'] },
 };
 
 export default function RootLayout({

@@ -1,50 +1,38 @@
 import IpCopyButton from './ip-copy-button';
+import UserBar from './components/UserBar';
+import VipShop from './components/VipShop';
 
-const categories = [
+const otherCategories = [
   {
     index: '01',
-    key: 'vip',
-    name: 'VIP Rütbeler',
-    desc: 'Sunucuda kalıcı ayrıcalıklar, özel komutlar ve öncelikli giriş.',
-    color: 'var(--amber)',
-  },
-  {
-    index: '02',
-    key: 'rutbe',
-    name: 'Rütbe & Prefix',
-    desc: 'İsim renkleri, sohbet prefixleri ve tab liste rozetleri.',
-    color: 'var(--silver)',
-  },
-  {
-    index: '03',
     key: 'kit',
     name: 'Kitler',
     desc: 'Hazır ekipman paketleri, tek tıkla envanterine gelir.',
     color: 'var(--emerald)',
   },
   {
-    index: '04',
+    index: '02',
     key: 'kasa_anahtari',
     name: 'Kasa Anahtarı',
     desc: 'Ödül sandıklarını açmak için gereken anahtarlar.',
     color: '#c9884f',
   },
   {
-    index: '05',
+    index: '03',
     key: 'kredi',
     name: 'Kredi',
     desc: 'Mağazada dilediğin ürüne harcayabileceğin bakiye.',
     color: '#7fb0d9',
   },
   {
-    index: '06',
+    index: '04',
     key: 'kozmetik',
     name: 'Kozmetik',
     desc: 'Parçacık efektleri, evcil hayvanlar ve görsel eşyalar.',
     color: '#b088c9',
   },
   {
-    index: '07',
+    index: '05',
     key: 'ozel',
     name: 'Özel Eşyalar',
     desc: 'Sınırlı sayıda üretilen, zamanla değeri artan koleksiyon eşyaları.',
@@ -59,20 +47,21 @@ export default function HomePage() {
     <>
       <header className="nav">
         <div className="shell nav-inner">
-          <div className="wordmark">
-            <span className="wordmark-mark" aria-hidden="true" />
+          <a href="/" className="wordmark">
+            <img src="/logo.png" alt="Silvera" className="wordmark-logo" />
             SILVERA
-          </div>
+          </a>
           <nav className="nav-right">
+            <a href="#vip-shop" className="mode-pill">
+              SVX <span>(BoxPvP)</span>
+            </a>
             <a href="#kategoriler" className="nav-link">
               Mağaza
             </a>
             <a href="#nasil-calisir" className="nav-link">
               Nasıl Çalışır
             </a>
-            <a href="/giris" className="btn btn-ghost">
-              Giriş Yap
-            </a>
+            <UserBar />
           </nav>
         </div>
       </header>
@@ -88,65 +77,49 @@ export default function HomePage() {
               Envanterini <em>Silvera</em>&apos;da güçlendir.
             </h1>
             <p className="hero-sub">
-              Rütbe, kit, kasa anahtarı ve daha fazlası — satın al, oyunda saniyeler
-              içinde teslim alsın. Kartla veya kredi bakiyenle öde.
+              SVX (BoxPvP) rütbelerinden kitlere, kasa anahtarından krediye kadar her şey
+              burada — satın al, oyunda saniyeler içinde teslim alsın.
             </p>
             <div className="hero-actions">
               <div className="ip-box">
                 <span className="ip-box-label">Sunucu IP</span>
                 <IpCopyButton ip={SERVER_IP} />
               </div>
-              <a href="#kategoriler" className="btn btn-primary">
-                Mağazayı Aç
+              <a href="#vip-shop" className="btn btn-primary">
+                VIP Mağazasını Aç
               </a>
             </div>
           </div>
 
           <div className="hero-art" aria-hidden="true">
-            {[
-              'glow-amber', '', 'filled', '',
-              '', 'filled', 'glow-emerald', '',
-              'filled', '', '', 'glow-silver',
-              '', 'filled', '', 'filled',
-            ].map((cls, i) => (
-              <div key={i} className={`mosaic-cell ${cls}`} />
-            ))}
+            <img src="/logo.png" alt="" className="hero-art-logo" />
           </div>
+        </section>
+
+        <section className="shell section vip-section" id="vip-shop">
+          <div className="section-head">
+            <div>
+              <span className="mode-pill mode-pill-static">
+                SVX <span>(BoxPvP)</span>
+              </span>
+              <h2 className="section-title" style={{ marginTop: 14 }}>
+                VIP Rütbeleri
+              </h2>
+            </div>
+            <span className="section-note">AstraVIP → PrimeVIP → StrongVIP → SVIP+</span>
+          </div>
+
+          <VipShop />
         </section>
 
         <section className="shell section" id="kategoriler">
           <div className="section-head">
-            <h2 className="section-title">Envanterini Aç</h2>
-            <span className="section-note">7 / 9 slot dolu</span>
-          </div>
-
-          <div className="hotbar">
-            {categories.map((c, i) => (
-              <a
-                key={c.key}
-                href={`#${c.key}`}
-                className="hotbar-slot active"
-                aria-label={c.name}
-              >
-                <span className="hotbar-slot-index">{i + 1}</span>
-                <span
-                  className="hotbar-slot-icon"
-                  style={{ background: c.color }}
-                />
-              </a>
-            ))}
-            <div className="hotbar-slot empty" aria-hidden="true">
-              <span className="hotbar-slot-index">8</span>
-              <span className="hotbar-slot-icon" />
-            </div>
-            <div className="hotbar-slot empty" aria-hidden="true">
-              <span className="hotbar-slot-index">9</span>
-              <span className="hotbar-slot-icon" />
-            </div>
+            <h2 className="section-title">Diğer Ürünler</h2>
+            <span className="section-note">5 kategori</span>
           </div>
 
           <div className="cat-grid">
-            {categories.map((c, i) => (
+            {otherCategories.map((c) => (
               <div className="cat-card" key={c.key} id={c.key}>
                 <div className="cat-card-top">
                   <span className="cat-card-index">{c.index}</span>
@@ -166,13 +139,13 @@ export default function HomePage() {
           <div className="steps">
             <div className="step">
               <div className="step-num">001</div>
-              <h4>Ürününü seç</h4>
-              <p>Mağazadan istediğin rütbe, kit veya kredi paketini bul.</p>
+              <h4>Hesabınla giriş yap</h4>
+              <p>Oyun içi kayıt bilgilerinle siteye giriş yap.</p>
             </div>
             <div className="step">
               <div className="step-num">002</div>
-              <h4>Güvenle öde</h4>
-              <p>Kartla veya bakiyenle öde, işlemin anında onaylanır.</p>
+              <h4>Ürününü seç</h4>
+              <p>VIP rütbesi, kit veya kredi paketini seç.</p>
             </div>
             <div className="step">
               <div className="step-num">003</div>

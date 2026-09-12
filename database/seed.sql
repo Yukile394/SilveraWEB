@@ -6,16 +6,49 @@
 insert into admin_users (username, password_hash)
 values ('admin', '$2a$12$REPLACE_WITH_BCRYPT_HASH');
 
--- 2) Örnek ürün: Silvera VIP
+-- 2) SVX (BoxPvP) VIP rütbeleri — güç sırası: Astra > Prime > Strong > SVIP+
+-- Fiyat/kredi değerleri örnektir, admin panelinden veya doğrudan burada
+-- kendi fiyatlarınla değiştirebilirsin.
 insert into products (category, name, description, benefits, price, credit_price, delivery_command, is_active)
-values (
+values
+(
   'vip',
-  'Silvera VIP',
-  'Sunucuda özel yetkiler ve ayrıcalıklar kazan.',
-  '["Özel [VIP] rütbesi", "Renkli sohbet", "Ekstra ev sayısı", "Öncelikli sıra"]',
-  100.00,
-  100,
-  'lp user {PLAYER} parent set silvera_vip',
+  'SVIP+',
+  'BoxPvP''e ilk adım rütben. Temel ayrıcalıklarla oyuna güçlü başla.',
+  '["[SVIP+] rütbesi ve prefix", "Özel sohbet rengi", "+1 ev (home) hakkı", "Giriş öncelik sırası"]',
+  75.00,
+  75,
+  'lp user {PLAYER} parent set svip_plus',
+  true
+),
+(
+  'vip',
+  'StrongVIP',
+  'Daha fazla eşya ve komut ayrıcalığı isteyen oyuncular için orta seviye rütbe.',
+  '["[StrongVIP] rütbesi ve prefix", "SVIP+''nin tüm ayrıcalıkları", "+2 ev (home) hakkı", "Özel kit erişimi", "Kasa anahtarı indirimi"]',
+  150.00,
+  150,
+  'lp user {PLAYER} parent set strong_vip',
+  true
+),
+(
+  'vip',
+  'PrimeVIP',
+  'Rekabetçi oyuncular için ileri seviye rütbe.',
+  '["[PrimeVIP] rütbesi ve prefix", "StrongVIP''nin tüm ayrıcalıkları", "+3 ev (home) hakkı", "Özel PvP kiti", "Renkli tab-liste rozeti", "Haftalık bonus kredi"]',
+  250.00,
+  250,
+  'lp user {PLAYER} parent set prime_vip',
+  true
+),
+(
+  'vip',
+  'AstraVIP',
+  'Silvera''nın en üst seviye rütbesi. Sunucudaki tüm ayrıcalıklara sahip ol.',
+  '["[AstraVIP] rütbesi ve özel prefix", "PrimeVIP''nin tüm ayrıcalıkları", "Sınırsız ev (home) hakkı", "Özel parçacık efekti", "Öncelikli destek", "Aylık özel kasa anahtarı"]',
+  400.00,
+  400,
+  'lp user {PLAYER} parent set astra_vip',
   true
 );
 

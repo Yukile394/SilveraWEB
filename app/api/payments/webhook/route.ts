@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminClient } from '@/lib/supabase';
 
+// NOT: iyzico Checkout Form akışında asıl doğrulama /api/payment/callback
+// route'unda yapılıyor (token'ı iyzico'ya sorarak). Bu dosya, ileride
+// asenkron bir webhook gönderen başka bir sağlayıcı (örn. PayTR) eklenirse
+// kullanılacak GENEL bir şablon olarak duruyor — şu an aktif akışta çağrılmıyor.
 // TODO: PAYMENT_PROVIDER_CONFIG
 // Bu dosya PayTR / iyzico gibi bir sağlayıcının webhook formatına göre
 // uyarlanmalı. Aşağıdaki yapı genel bir örnektir; gerçek sağlayıcı
