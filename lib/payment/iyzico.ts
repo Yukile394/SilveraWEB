@@ -5,11 +5,21 @@ import type { PaymentProvider, CheckoutParams, CheckoutResult, VerifiedPaymentRe
 // PAYMENT_MODE=production -> api.iyzipay.com
 const isTestMode = (process.env.PAYMENT_MODE ?? 'test') !== 'production';
 
-const client = new Iyzipay({
-  apiKey: process.env.IYZICO_API_KEY || '',
-  secretKey: process.env.IYZICO_SECRET_KEY || '',
-  uri: isTestMode ? 'https://sandbox-api.iyzipay.com' : 'https://api.iyzipay.com',
-});
+// Client'ı build/import anında değil, ilk gerçekten kullanıldığında
+// oluşturuyoruz. Aksi halde `next build` sırasında (env değişkenleri henüz
+// yokken, örn. GitHub Actions'ta) "apiKey cannot be empty" hatasıyla build
+// çöker.
+let _client: any = null;
+function getClient() {
+  if (!_client) {
+    _client = new Iyzipay({
+      apiKey: process.env.IYZICO_API_KEY || '',
+      secretKey: process.env.IYZICO_SECRET_KEY || '',
+      uri: isTestMode ? 'https://sandbox-api.iyzipay.com' : 'https://api.iyzipay.com',
+    });
+  }
+  return _client;
+}
 
 function request<T>(fn: (req: any, cb: (err: any, result: T) => void) => void, req: any): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -72,6 +82,7 @@ export const iyzicoProvider: PaymentProvider = {
         ],
       };
 
+      const client = getClient();
       const result: any = await request(client.checkoutFormInitialize.create.bind(client.checkoutFormInitialize), req);
 
       if (result.status !== 'success') {
@@ -86,6 +97,7 @@ export const iyzicoProvider: PaymentProvider = {
 
   async verifyCallback(token: string): Promise<VerifiedPaymentResult> {
     try {
+      const client = getClient();
       const result: any = await request(client.checkoutForm.retrieve.bind(client.checkoutForm), {
         locale: Iyzipay.LOCALE.TR,
         token,
