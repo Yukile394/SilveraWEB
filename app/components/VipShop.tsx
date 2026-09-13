@@ -17,14 +17,38 @@ type BuyState = 'idle' | 'loading' | 'success' | 'error';
 
 export default function VipShop() {
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [loadError, setLoadError] = useState('');
   const [buyState, setBuyState] = useState<Record<string, BuyState>>({});
   const [message, setMessage] = useState<Record<string, string>>({});
 
+  function loadProducts() {
+    setProducts(null);
+    setLoadError('');
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+
+    fetch('/api/products?category=vip', { cache: 'no-store', signal: controller.signal })
+      .then(async (r) => {
+        const data = await r.json().catch(() => null);
+        if (!r.ok || !data) {
+          throw new Error(data?.error || 'Ürünler alınamadı.');
+        }
+        setProducts(data.products ?? []);
+      })
+      .catch((err) => {
+        setProducts([]);
+        setLoadError(
+          err?.name === 'AbortError'
+            ? 'Sunucudan yanıt gelmedi (zaman aşımı).'
+            : err?.message || 'Ürünler yüklenemedi.'
+        );
+      })
+      .finally(() => clearTimeout(timeout));
+  }
+
   useEffect(() => {
-    fetch('/api/products?category=vip', { cache: 'no-store' })
-      .then((r) => r.json())
-      .then((d) => setProducts(d.products ?? []))
-      .catch(() => setProducts([]));
+    loadProducts();
   }, []);
 
   async function handleBuyWithBalance(product: Product) {
@@ -97,6 +121,21 @@ export default function VipShop() {
 
   if (products === null) {
     return <div className="vip-loading">Rütbeler yükleniyor…</div>;
+  }
+
+  if (loadError) {
+    return (
+      <div className="vip-loading vip-loading-error">
+        <p>{loadError}</p>
+        <button type="button" className="btn btn-ghost" onClick={loadProducts}>
+          Tekrar Dene
+        </button>
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return <div className="vip-loading">Şu an satışta VIP ürünü yok.</div>;
   }
 
   const sorted = [...products].sort(
