@@ -3,7 +3,7 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/((?!maintenance.html).*)',
+        source: '/((?!maintenance.html|logo.png|banner.png|favicon.ico).*)',
         destination: '/maintenance.html',
         permanent: false,
       },
