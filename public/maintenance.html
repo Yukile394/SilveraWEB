@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silvera — Bakımda</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0a0908;
+    --bg-1:#131110;
+    --red-hi:#e0332f;
+    --red-mid:#a41c1c;
+    --red-deep:#4a0c0c;
+    --ink:#ece6e1;
+    --ink-dim:#9a8f88;
+    --line:rgba(224,51,47,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    background:var(--bg-0);
+    color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    overflow:hidden;
+  }
+  body{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 38%, rgba(164,28,28,0.16), transparent 70%),
+      radial-gradient(ellipse 120% 90% at 50% 100%, var(--bg-1), var(--bg-0));
+  }
+
+  /* watermark logo, centered, symmetric, faint */
+  .watermark{
+    position:absolute;
+    top:50%;left:50%;
+    width:min(70vw,720px);
+    height:min(70vw,720px);
+    transform:translate(-50%,-50%);
+    background-image:url("/logo.png");
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:center;
+    opacity:0.05;
+    filter:grayscale(0.15);
+    pointer-events:none;
+    animation: breathe 8s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{opacity:0.04; transform:translate(-50%,-50%) scale(1);}
+    50%{opacity:0.07; transform:translate(-50%,-50%) scale(1.015);}
+  }
+
+  /* symmetric hairline frame */
+  .frame{
+    position:absolute;
+    inset:28px;
+    border:1px solid var(--line);
+    pointer-events:none;
+  }
+  .frame::before,.frame::after{
+    content:"";
+    position:absolute;
+    top:-1px;bottom:-1px;
+    width:1px;
+    background:var(--line);
+  }
+  .frame::before{left:50%;opacity:0;} /* kept subtle/off by default */
+
+  .content{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    padding:0 24px;
+    max-width:620px;
+  }
+
+  h1{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    letter-spacing:0.04em;
+    font-size:clamp(2.1rem,6vw,3.4rem);
+    margin:0 0 16px;
+    color:var(--ink);
+    text-shadow:0 0 22px rgba(224,51,47,0.25);
+  }
+  h1 em{
+    font-style:normal;
+    color:var(--red-hi);
+  }
+
+  p.lede{
+    font-size:1.02rem;
+    line-height:1.65;
+    color:var(--ink-dim);
+    margin:0 auto 34px;
+    max-width:460px;
+  }
+
+  .status-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    font-size:0.82rem;
+    color:var(--ink-dim);
+    letter-spacing:0.02em;
+  }
+  .dot{
+    width:8px;height:8px;
+    border-radius:50%;
+    background:var(--red-hi);
+    box-shadow:0 0 10px 2px rgba(224,51,47,0.7);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1; transform:scale(1);}
+    50%{opacity:0.45; transform:scale(0.8);}
+  }
+  .opening{
+    margin:14px auto 0;
+    font-size:0.9rem;
+    color:var(--ink-dim);
+    letter-spacing:0.02em;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .watermark, .dot{ animation:none !important; }
+  }
+
+  /* responsive tuning */
+  @media (max-width: 720px){
+    body{ overflow-y:auto; }
+    .frame{ inset:16px; }
+    .watermark{ width:min(88vw,520px); height:min(88vw,520px); }
+    h1{ font-size:clamp(1.7rem,7.5vw,2.3rem); }
+    p.lede{ font-size:0.95rem; padding:0 6px; }
+    footer{ bottom:16px; }
+  }
+
+  @media (max-width: 380px){
+    .watermark{ width:78vw; height:78vw; }
+  }
+
+  @media (min-width: 1600px){
+    .watermark{ width:min(60vw,820px); height:min(60vw,820px); }
+  }
+
+  footer{
+    position:absolute;
+    bottom:26px;left:0;right:0;
+    text-align:center;
+    font-size:0.72rem;
+    color:#5c5450;
+    letter-spacing:0.03em;
+  }
+</style>
+</head>
+<body>
+
+  <div class="watermark"></div>
+  <div class="frame"></div>
+
+  <div class="content">
+    <h1>Silvera şu an <em>bakımda</em></h1>
+    <p class="lede">
+      Sunucuyu daha iyi hale getirmek için kısa bir bakım çalışması yürütüyoruz.
+      Kısa süre içinde kaldığımız yerden devam edeceğiz.
+    </p>
+    <div class="status-row">
+      <span class="dot"></span>
+      <span>Bakım sürüyor</span>
+    </div>
+    <p class="opening">Açılış 25 Eylül</p>
+  </div>
+
+  <footer>Silvera</footer>
+
+</body>
+</html>
