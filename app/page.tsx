@@ -40,7 +40,7 @@ const otherCategories = [
   },
 ] as const;
 
-const SERVER_IP = '31.57.77.139:25572';
+const SERVER_IP = 'play.silvera.com.tr';
 
 export default function HomePage() {
   return (
@@ -120,13 +120,14 @@ export default function HomePage() {
 
           <div className="cat-grid">
             {otherCategories.map((c) => (
-              <div className="cat-card" key={c.key} id={c.key}>
+              <div className="cat-card cat-card-disabled" key={c.key} id={c.key} aria-disabled="true">
                 <div className="cat-card-top">
                   <span className="cat-card-index">{c.index}</span>
-                  <span className="cat-swatch" style={{ background: c.color }} />
+                  <span className="cat-swatch cat-swatch-disabled" />
                 </div>
                 <h3>{c.name}</h3>
                 <p>{c.desc}</p>
+                <span className="cat-card-disabled-tag">Kullanılmıyor</span>
               </div>
             ))}
           </div>
