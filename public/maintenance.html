@@ -130,8 +130,40 @@
     letter-spacing:0.02em;
   }
 
+  .discord-link{
+    display:inline-block;
+    margin-top:16px;
+    font-family:'Manrope',sans-serif;
+    font-weight:600;
+    font-size:0.98rem;
+    letter-spacing:0.01em;
+    text-decoration:none;
+    background:linear-gradient(90deg,
+      #ff3b3b, #ff9d3b, #f4e14d, #4dff8f, #4dc9ff, #7a5bff, #ff3bd6, #ff3b3b);
+    background-size:400% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation: rgb-flow 5s linear infinite;
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+  .discord-link:hover{
+    transform:scale(1.04);
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.25));
+  }
+  .discord-link:active{
+    transform:scale(0.97);
+  }
+  @keyframes rgb-flow{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:400% 50%; }
+  }
   @media (prefers-reduced-motion: reduce){
-    .watermark, .dot{ animation:none !important; }
+    .discord-link{ animation:none; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .watermark, .dot, .discord-link{ animation:none !important; }
   }
 
   /* responsive tuning */
@@ -178,6 +210,7 @@
       <span>Bakım sürüyor</span>
     </div>
     <p class="opening">Açılış 25 Eylül</p>
+    <a class="discord-link" href="https://discord.gg/7wyf6VQj2u" target="_blank" rel="noopener noreferrer">discord.gg/7wyf6VQj2u</a>
   </div>
 
   <footer>Silvera</footer>
