@@ -1,193 +1,169 @@
 import IpCopyButton from './ip-copy-button';
-import OnlineCount from './components/OnlineCount';
-import SocialLinks from './components/SocialLinks';
-import { createAdminClient } from '@/lib/supabase';
-import { SERVER_IP } from '@/lib/site';
+import UserBar from './components/UserBar';
+import VipShop from './components/VipShop';
 
-// Bağış listeleri 60 saniyede bir yenilenir.
-export const revalidate = 60;
+const otherCategories = [
+  {
+    index: '01',
+    key: 'kit',
+    name: 'Kitler',
+    desc: 'Hazır ekipman paketleri, tek tıkla envanterine gelir.',
+    color: 'var(--emerald)',
+  },
+  {
+    index: '02',
+    key: 'kasa_anahtari',
+    name: 'Kasa Anahtarı',
+    desc: 'Ödül sandıklarını açmak için gereken anahtarlar.',
+    color: '#c9884f',
+  },
+  {
+    index: '03',
+    key: 'kredi',
+    name: 'Kredi',
+    desc: 'Mağazada dilediğin ürüne harcayabileceğin bakiye.',
+    color: '#7fb0d9',
+  },
+  {
+    index: '04',
+    key: 'kozmetik',
+    name: 'Kozmetik',
+    desc: 'Parçacık efektleri, evcil hayvanlar ve görsel eşyalar.',
+    color: '#b088c9',
+  },
+  {
+    index: '05',
+    key: 'ozel',
+    name: 'Özel Eşyalar',
+    desc: 'Sınırlı sayıda üretilen, zamanla değeri artan koleksiyon eşyaları.',
+    color: '#d97757',
+  },
+] as const;
 
-interface DonorRow {
-  total_price: number | string;
-  created_at: string;
-  users: { minecraft_nick: string } | { minecraft_nick: string }[] | null;
-}
+const SERVER_IP = 'play.silvera.com.tr';
 
-interface Donor {
-  nick: string;
-  amount: number;
-}
-
-interface DonorData {
-  topAll: Donor | null;
-  topMonth: Donor | null;
-  recent: Donor[];
-}
-
-function nickOf(row: DonorRow): string | null {
-  const u = Array.isArray(row.users) ? row.users[0] : row.users;
-  return u?.minecraft_nick ?? null;
-}
-
-function pickTop(totals: Map<string, number>): Donor | null {
-  let best: Donor | null = null;
-  for (const [nick, amount] of Array.from(totals.entries())) {
-    if (best === null || amount > best.amount) best = { nick, amount };
-  }
-  return best;
-}
-
-// Sadece kartla yapılmış, ödemesi tamamlanmış siparişler bağış sayılır.
-async function getDonors(): Promise<DonorData> {
-  const empty: DonorData = { topAll: null, topMonth: null, recent: [] };
-  try {
-    const db = createAdminClient();
-    const { data, error } = await db
-      .from('orders')
-      .select('total_price, created_at, users(minecraft_nick)')
-      .eq('payment_method', 'card')
-      .in('status', ['paid', 'delivered'])
-      .order('created_at', { ascending: false })
-      .limit(2000);
-
-    if (error || !data) return empty;
-
-    const rows = data as unknown as DonorRow[];
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-
-    const all = new Map<string, number>();
-    const month = new Map<string, number>();
-    const recent: Donor[] = [];
-
-    for (const row of rows) {
-      const nick = nickOf(row);
-      const amount = Number(row.total_price);
-      if (!nick || !Number.isFinite(amount)) continue;
-
-      all.set(nick, (all.get(nick) ?? 0) + amount);
-      if (new Date(row.created_at).getTime() >= monthStart) {
-        month.set(nick, (month.get(nick) ?? 0) + amount);
-      }
-      if (recent.length < 5) recent.push({ nick, amount });
-    }
-
-    return { topAll: pickTop(all), topMonth: pickTop(month), recent };
-  } catch {
-    return empty;
-  }
-}
-
-function money(n: number): string {
-  return `${n.toLocaleString('tr-TR')} ₺`;
-}
-
-function DonorCard({ donor, sub }: { donor: Donor | null; sub: 'total' | 'month' }) {
-  if (!donor) {
-    return <div className="donor-card donor-empty">Henüz bağış yapılmadı.</div>;
-  }
+export default function HomePage() {
   return (
-    <div className="donor-card">
-      <div className="donor-avatar">
-        <img
-          src={`https://mc-heads.net/avatar/${encodeURIComponent(donor.nick)}/64`}
-          alt=""
-          width={56}
-          height={56}
-        />
-        <span className="donor-medal">1</span>
-      </div>
-      <div className="donor-body">
-        <span className="donor-label">KULLANICI ADI</span>
-        <strong className="donor-nick">{donor.nick}</strong>
-        {sub === 'total' ? (
-          <span className="donor-amount">{money(donor.amount)}</span>
-        ) : (
-          <span className="donor-month">
-            Bu ay toplam <b>{money(donor.amount)}</b>
-            <br />
-            <b>bağışta bulundunuz.</b>
-          </span>
-        )}
-      </div>
-      <svg className="donor-heart" width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 20.5s-8-4.9-8-10.7A4.4 4.4 0 0 1 12 7.3a4.4 4.4 0 0 1 8 2.5c0 5.8-8 10.7-8 10.7z" />
-      </svg>
-    </div>
-  );
-}
-
-export default async function HomePage() {
-  const donors = await getDonors();
-
-  return (
-    <main>
-      <section className="shell hero">
-        <div>
-          <OnlineCount />
-          <h1>
-            Envanterini <em>Silvera Network</em>&apos;te güçlendir.
-          </h1>
-          <p className="hero-sub">
-            Rütbelerden kitlere, kasa anahtarından krediye kadar her şey burada — satın al,
-            oyunda saniyeler içinde teslim al.
-          </p>
-          <div className="hero-actions">
-            <div className="ip-box">
-              <span className="ip-box-label">Sunucu IP</span>
-              <IpCopyButton ip={SERVER_IP} />
-            </div>
-            <a href="/magaza" className="btn btn-primary">
-              Mağazaya Git
+    <>
+      <header className="nav">
+        <div className="shell nav-inner">
+          <a href="/" className="wordmark">
+            <img src="/logo.png" alt="Silvera" className="wordmark-logo" />
+            SILVERA
+          </a>
+          <nav className="nav-right">
+            <a href="#vip-shop" className="mode-pill">
+              SVX <span>(BoxPvP)</span>
             </a>
-          </div>
+            <a href="#kategoriler" className="nav-link">
+              Mağaza
+            </a>
+            <a href="#nasil-calisir" className="nav-link">
+              Nasıl Çalışır
+            </a>
+            <UserBar />
+          </nav>
         </div>
+      </header>
 
-        <div className="hero-art" aria-hidden="true">
-          <img src="/logo-mavi.png" alt="" className="hero-art-logo" />
-        </div>
-      </section>
-
-      <div className="page home-sections">
-        <h2 className="page-h2">Blog</h2>
-        <div className="notice notice-err">
-          <span aria-hidden="true">✕</span> Hiçbir kayıt bulunamadı!
-        </div>
-
-        <div className="donor-head">
-          <h3>En iyi donör</h3>
-          <span>Toplam süre</span>
-        </div>
-        <DonorCard donor={donors.topAll} sub="total" />
-
-        <div className="donor-head">
-          <h3>En iyi donör</h3>
-          <span>Bu ay</span>
-        </div>
-        <DonorCard donor={donors.topMonth} sub="month" />
-
-        <h3 className="page-h3">Son bağışlar</h3>
-        <div className="donor-table">
-          <div className="donor-table-head">
-            <span>KULLANICI ADI</span>
-            <span>MİKTAR</span>
-          </div>
-          {donors.recent.length === 0 ? (
-            <div className="donor-table-row donor-table-empty">Henüz bağış yok.</div>
-          ) : (
-            donors.recent.map((d, i) => (
-              <div className="donor-table-row" key={`${d.nick}-${i}`}>
-                <span>{d.nick}</span>
-                <span>{money(d.amount)}</span>
+      <main>
+        <section className="shell hero">
+          <div className="hero-bg" aria-hidden="true" />
+          <div className="hero-bg-fade" aria-hidden="true" />
+          <div className="hero-copy">
+            <div className="eyebrow">
+              <span className="eyebrow-dot" aria-hidden="true" />
+              Sunucu şu anda açık
+            </div>
+            <h1>
+              Envanterini <em>Silvera</em>&apos;da güçlendir.
+            </h1>
+            <p className="hero-sub">
+              SVX (BoxPvP) rütbelerinden kitlere, kasa anahtarından krediye kadar
+              ihtiyacın olan her şey burada. Satın al, oyuna dön — ürünün saniyeler
+              içinde hesabına tanımlanır.
+            </p>
+            <div className="hero-actions">
+              <div className="ip-box">
+                <span className="ip-box-label">Sunucu IP</span>
+                <IpCopyButton ip={SERVER_IP} />
               </div>
-            ))
-          )}
-        </div>
+              <a href="#vip-shop" className="btn btn-primary">
+                VIP Mağazasını Aç
+              </a>
+            </div>
+          </div>
+        </section>
 
-        <h3 className="page-h3">Sosyal medya</h3>
-        <SocialLinks />
-      </div>
-    </main>
+        <section className="shell section vip-section" id="vip-shop">
+          <div className="section-head">
+            <div>
+              <span className="mode-pill mode-pill-static">
+                SVX <span>(BoxPvP)</span>
+              </span>
+              <h2 className="section-title" style={{ marginTop: 14 }}>
+                VIP Rütbeleri
+              </h2>
+            </div>
+            <span className="section-note">AstraVIP → PrimeVIP → StrongVIP → SVIP+</span>
+          </div>
+
+          <VipShop />
+        </section>
+
+        <section className="shell section" id="kategoriler">
+          <div className="section-head">
+            <h2 className="section-title">Diğer Ürünler</h2>
+            <span className="section-note">5 kategori</span>
+          </div>
+
+          <div className="cat-grid">
+            {otherCategories.map((c) => (
+              <div className="cat-card cat-card-disabled" key={c.key} id={c.key} aria-disabled="true">
+                <div className="cat-card-top">
+                  <span className="cat-card-index">{c.index}</span>
+                  <span className="cat-swatch cat-swatch-disabled" />
+                </div>
+                <h3>{c.name}</h3>
+                <p>{c.desc}</p>
+                <span className="cat-card-disabled-tag">Kullanılmıyor</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="shell section" id="nasil-calisir">
+          <div className="section-head">
+            <h2 className="section-title">Nasıl Çalışır</h2>
+          </div>
+          <div className="steps">
+            <div className="step">
+              <div className="step-num">001</div>
+              <h4>Hesabınla giriş yap</h4>
+              <p>Oyun içi kayıt bilgilerinle siteye giriş yap.</p>
+            </div>
+            <div className="step">
+              <div className="step-num">002</div>
+              <h4>Ürününü seç</h4>
+              <p>VIP rütbesi, kit veya kredi paketini seç.</p>
+            </div>
+            <div className="step">
+              <div className="step-num">003</div>
+              <h4>Oyunda teslim al</h4>
+              <p>Sunucuya giriş yaptığında ürünün otomatik olarak hesabına işlenir.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <div className="shell footer-inner">
+          <div className="footer-ip">
+            Sunucu adresi: <strong>{SERVER_IP}</strong>
+          </div>
+          <div className="footer-meta">© {new Date().getFullYear()} Silvera</div>
+        </div>
+      </footer>
+    </>
   );
 }
-
