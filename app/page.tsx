@@ -1,5 +1,5 @@
 import IpCopyButton from './ip-copy-button';
-import UserBar from './components/UserBar';
+import SiteNav from './components/SiteNav';
 import VipShop from './components/VipShop';
 
 const otherCategories = [
@@ -45,26 +45,7 @@ const SERVER_IP = 'play.silvera.com.tr';
 export default function HomePage() {
   return (
     <>
-      <header className="nav">
-        <div className="shell nav-inner">
-          <a href="/" className="wordmark">
-            <img src="/logo.png" alt="Silvera" className="wordmark-logo" />
-            SILVERA
-          </a>
-          <nav className="nav-right">
-            <a href="#vip-shop" className="mode-pill">
-              SVX <span>(BoxPvP)</span>
-            </a>
-            <a href="#kategoriler" className="nav-link">
-              Mağaza
-            </a>
-            <a href="#nasil-calisir" className="nav-link">
-              Nasıl Çalışır
-            </a>
-            <UserBar />
-          </nav>
-        </div>
-      </header>
+      <SiteNav />
 
       <main>
         <section className="shell hero">
@@ -74,7 +55,7 @@ export default function HomePage() {
               Sunucu şu anda açık
             </div>
             <h1>
-              Envanterini <em>Silvera</em>&apos;da güçlendir.
+              Envanterini <em>Silvera Network</em>&apos;te güçlendir.
             </h1>
             <p className="hero-sub">
               SVX (BoxPvP) rütbelerinden kitlere, kasa anahtarından krediye kadar her şey
@@ -157,14 +138,15 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="footer">
+      <footer className="footer" id="destek">
         <div className="shell footer-inner">
           <div className="footer-ip">
             Sunucu adresi: <strong>{SERVER_IP}</strong>
           </div>
-          <div className="footer-meta">© {new Date().getFullYear()} Silvera</div>
+          <div className="footer-meta">© {new Date().getFullYear()} Silvera Network</div>
         </div>
       </footer>
     </>
   );
 }
+
