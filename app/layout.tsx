@@ -1,17 +1,19 @@
 import type { Metadata } from 'next';
-import { Oswald, Manrope, JetBrains_Mono } from 'next/font/google';
+import { Poppins, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+import SiteNav from './components/SiteNav';
+import SiteFooter from './components/SiteFooter';
 
-const display = Oswald({
-  subsets: ['latin'],
-  weight: ['500', '600', '700'],
+const display = Poppins({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['600', '700', '800'],
   variable: '--font-display',
   display: 'swap',
 });
 
-const body = Manrope({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+const body = Poppins({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-body',
   display: 'swap',
 });
@@ -24,10 +26,10 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Silvera — Minecraft Sunucu Mağazası',
+  title: 'Silvera Network — Minecraft Sunucu Mağazası',
   description:
-    'Silvera sunucusu için rütbe, kit, kasa anahtarı ve kredi satın al. Anında teslimat, güvenli ödeme.',
-  icons: { icon: '/logo.png' },
+    'Silvera Network sunucusu için rütbe, kit, kasa anahtarı ve kredi satın al. Anında teslimat, güvenli ödeme.',
+  icons: { icon: '/logo-mavi.png' },
   openGraph: { images: ['/banner.png'] },
 };
 
@@ -38,7 +40,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr" className={`${display.variable} ${body.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <SiteNav />
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }
