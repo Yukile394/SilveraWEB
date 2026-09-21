@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getTierDisplay } from '@/lib/vipTiers';
+import { writeCart } from '@/lib/cart';
 
 interface Product {
   id: string;
@@ -13,13 +14,10 @@ interface Product {
   category: string;
 }
 
-type BuyState = 'idle' | 'loading' | 'success' | 'error';
-
 export default function VipShop() {
   const [products, setProducts] = useState<Product[] | null>(null);
   const [loadError, setLoadError] = useState('');
-  const [buyState, setBuyState] = useState<Record<string, BuyState>>({});
-  const [message, setMessage] = useState<Record<string, string>>({});
+  const [addedId, setAddedId] = useState<string | null>(null);
 
   function loadProducts() {
     setProducts(null);
@@ -51,72 +49,15 @@ export default function VipShop() {
     loadProducts();
   }, []);
 
-  async function handleBuyWithBalance(product: Product) {
-    setBuyState((s) => ({ ...s, [product.id]: 'loading' }));
-    setMessage((s) => ({ ...s, [product.id]: '' }));
-
-    try {
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: product.id, payment_method: 'credit_balance' }),
-      });
-
-      if (res.status === 401) {
-        window.location.href = '/giris';
-        return;
-      }
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setBuyState((s) => ({ ...s, [product.id]: 'error' }));
-        setMessage((s) => ({ ...s, [product.id]: data.error || 'Bir hata oluştu.' }));
-        return;
-      }
-
-      setBuyState((s) => ({ ...s, [product.id]: 'success' }));
-      setMessage((s) => ({
-        ...s,
-        [product.id]: `${product.name} başarıyla teslim edildi. Sipariş: #${data.order_id.slice(0, 8).toUpperCase()}`,
-      }));
-    } catch {
-      setBuyState((s) => ({ ...s, [product.id]: 'error' }));
-      setMessage((s) => ({ ...s, [product.id]: 'Bağlantı hatası, tekrar dene.' }));
-    }
-  }
-
-  async function handleBuyWithCard(product: Product) {
-    setBuyState((s) => ({ ...s, [product.id]: 'loading' }));
-    setMessage((s) => ({ ...s, [product.id]: '' }));
-
-    try {
-      const res = await fetch('/api/payment/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: product.id }),
-      });
-
-      if (res.status === 401) {
-        window.location.href = '/giris';
-        return;
-      }
-
-      const data = await res.json();
-
-      if (!res.ok || !data.paymentPageUrl) {
-        setBuyState((s) => ({ ...s, [product.id]: 'error' }));
-        setMessage((s) => ({ ...s, [product.id]: data.error || 'Ödeme başlatılamadı.' }));
-        return;
-      }
-
-      // Kart bilgileri hiç bizim sitemize girilmiyor — iyzico'nun kendi
-      // güvenli ödeme sayfasına yönlendiriyoruz.
-      window.location.href = data.paymentPageUrl;
-    } catch {
-      setBuyState((s) => ({ ...s, [product.id]: 'error' }));
-      setMessage((s) => ({ ...s, [product.id]: 'Bağlantı hatası, tekrar dene.' }));
-    }
+  function handleAddToCart(product: Product) {
+    writeCart({
+      product_id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      credit_price: product.credit_price,
+      category: 'Özel Üyelikler',
+    });
+    setAddedId(product.id);
   }
 
   if (products === null) {
@@ -135,7 +76,7 @@ export default function VipShop() {
   }
 
   if (products.length === 0) {
-    return <div className="vip-loading">Şu an satışta VIP ürünü yok.</div>;
+    return <div className="vip-loading">Şu an satışta ürün yok.</div>;
   }
 
   const sorted = [...products].sort(
@@ -146,7 +87,7 @@ export default function VipShop() {
     <div className="vip-grid">
       {sorted.map((p) => {
         const tier = getTierDisplay(p.name);
-        const state = buyState[p.id] ?? 'idle';
+        const added = addedId === p.id;
         return (
           <div className="vip-card" key={p.id} style={{ ['--tier-accent' as string]: tier.accent }}>
             <div className="vip-card-top">
@@ -163,36 +104,20 @@ export default function VipShop() {
 
             <div className="vip-card-bottom">
               <div className="vip-card-price">
-                <span className="vip-card-price-main">{p.price} TL</span>
+                <span className="vip-card-price-main">{p.price} ₺</span>
                 {p.credit_price && <span className="vip-card-price-alt">veya {p.credit_price} kredi</span>}
               </div>
               <div className="vip-buy-row">
-                <button
-                  type="button"
-                  className="btn vip-buy-btn"
-                  disabled={state === 'loading'}
-                  onClick={() => handleBuyWithCard(p)}
-                >
-                  {state === 'loading' ? 'Yönlendiriliyor…' : 'Kart ile Satın Al'}
+                <button type="button" className="btn vip-buy-btn" onClick={() => handleAddToCart(p)}>
+                  {added ? 'Sepete Eklendi ✓' : 'Sepete Ekle'}
                 </button>
-                {p.credit_price && (
-                  <button
-                    type="button"
-                    className="btn btn-ghost vip-buy-btn-alt"
-                    disabled={state === 'loading'}
-                    onClick={() => handleBuyWithBalance(p)}
-                  >
-                    Bakiyeyle Öde
-                  </button>
+                {added && (
+                  <a href="/sepet" className="btn btn-ghost vip-buy-btn-alt">
+                    Sepete Git
+                  </a>
                 )}
               </div>
             </div>
-
-            {message[p.id] && (
-              <p className={`vip-card-message ${state === 'error' ? 'is-error' : 'is-success'}`}>
-                {message[p.id]}
-              </p>
-            )}
           </div>
         );
       })}

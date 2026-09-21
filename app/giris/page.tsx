@@ -51,7 +51,7 @@ export default function GirisPage() {
       </a>
 
       <div className="auth-card">
-        <img src="/logo.png" alt="Silvera" className="auth-logo" />
+        <img src="/logo-mavi.png" alt="Silvera Network" className="auth-logo" />
         <h1 className="auth-title">SILVERA</h1>
         <p className="auth-sub">
           {mode === 'login'

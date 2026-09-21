@@ -57,7 +57,7 @@ export default function OdemeBasariliPage() {
         ×
       </a>
       <div className="auth-card">
-        <img src="/logo.png" alt="Silvera" className="auth-logo" />
+        <img src="/logo-mavi.png" alt="Silvera Network" className="auth-logo" />
         {loading && <p className="auth-sub">Sipariş kontrol ediliyor…</p>}
 
         {!loading && !order && (
