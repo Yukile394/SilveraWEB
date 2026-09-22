@@ -1,5 +1,3 @@
-import IpCopyButton from './ip-copy-button';
-import OnlineCount from './components/OnlineCount';
 import SocialLinks from './components/SocialLinks';
 import { createAdminClient } from '@/lib/supabase';
 import { SERVER_IP } from '@/lib/site';
@@ -122,30 +120,13 @@ export default async function HomePage() {
 
   return (
     <main>
-      <section className="shell hero">
-        <div>
-          <OnlineCount />
-          <h1>
-            Envanterini <em>Silvera Network</em>&apos;te güçlendir.
-          </h1>
-          <p className="hero-sub">
-            Rütbelerden kitlere, kasa anahtarından krediye kadar her şey burada — satın al,
-            oyunda saniyeler içinde teslim al.
-          </p>
-          <div className="hero-actions">
-            <div className="ip-box">
-              <span className="ip-box-label">Sunucu IP</span>
-              <IpCopyButton ip={SERVER_IP} />
-            </div>
-            <a href="/magaza" className="btn btn-primary">
-              Mağazaya Git
-            </a>
-          </div>
-        </div>
-
-        <div className="hero-art" aria-hidden="true">
+      <section className="shell hero hero-centered">
+        <div className="hero-art hero-art-centered" aria-hidden="true">
           <img src="/logo-mavi.png" alt="" className="hero-art-logo" />
         </div>
+        <a href="/magaza" className="btn btn-primary hero-centered-btn">
+          Mağazaya Git
+        </a>
       </section>
 
       <section className="shell">
