@@ -120,15 +120,6 @@ export default async function HomePage() {
 
   return (
     <main>
-      <section className="shell hero hero-centered">
-        <div className="logo-box">
-          <img src="/logo-mavi.png" alt="" className="logo-box-img" />
-          <a href="/magaza" className="btn btn-primary logo-box-btn">
-            Mağazaya Git
-          </a>
-        </div>
-      </section>
-
       <section className="shell">
         <div className="promo-banner">
           <img src="/hero-banner.png" alt="Silvera Network" className="promo-banner-img" />
@@ -137,6 +128,9 @@ export default async function HomePage() {
             <span className="promo-banner-ip-label">Sunucu IP</span>
             <span className="promo-banner-ip-value">{SERVER_IP}</span>
           </div>
+          <a href="/magaza" className="btn btn-primary promo-banner-btn">
+            Mağazaya Git
+          </a>
         </div>
       </section>
 
