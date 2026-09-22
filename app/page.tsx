@@ -148,6 +148,17 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="shell">
+        <div className="promo-banner">
+          <img src="/hero-banner.png" alt="Silvera Network" className="promo-banner-img" />
+          <div className="promo-banner-overlay" />
+          <div className="promo-banner-ip">
+            <span className="promo-banner-ip-label">Sunucu IP</span>
+            <span className="promo-banner-ip-value">{SERVER_IP}</span>
+          </div>
+        </div>
+      </section>
+
       <div className="page home-sections">
         <h2 className="page-h2">Blog</h2>
         <div className="notice notice-err">
