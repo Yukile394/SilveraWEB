@@ -121,12 +121,12 @@ export default async function HomePage() {
   return (
     <main>
       <section className="shell hero hero-centered">
-        <div className="hero-art hero-art-centered" aria-hidden="true">
-          <img src="/logo-mavi.png" alt="" className="hero-art-logo" />
+        <div className="logo-box">
+          <img src="/logo-mavi.png" alt="" className="logo-box-img" />
+          <a href="/magaza" className="btn btn-primary logo-box-btn">
+            Mağazaya Git
+          </a>
         </div>
-        <a href="/magaza" className="btn btn-primary hero-centered-btn">
-          Mağazaya Git
-        </a>
       </section>
 
       <section className="shell">
