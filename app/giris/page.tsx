@@ -2,6 +2,8 @@
 
 import { useState, FormEvent } from 'react';
 
+// Deneme modu: Giriş Yap sekmesi varsayılan olarak açık gelir.
+// Kayıt Ol şu an sunucuya bağlı doğrulama yapmadan, direkt hesap oluşturur (bkz. register route notu).
 export default function GirisPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [nick, setNick] = useState('');
